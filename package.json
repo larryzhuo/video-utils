@@ -1,0 +1,18 @@
+{
+  "name": "video-utils",
+  "version": "1.0.0",
+  "description": "wrapper ffmpeg and ffprobe to process video",
+  "main": "src/index.ts",
+  "dependencies": {
+    "log4js": "^6.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.18",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc --watch"
+  }
+}

@@ -1,13 +1,13 @@
 Node.js wrap ffmpeg and ffprobe to process video.
 
 ### Install
-> npm install video-utils
+> npm install video-util
 
 ### Example
 ```typescript
-import { VideoUtils, IGetFrameOption } from 'video-utils';
+import { VideoUtils, IGetFrameOption } from 'video-util';
 
-let videoIns = new VideoUtils();
+let videoUtilIns = new VideoUtil();
 
 (async function test() {
   //get video info

@@ -60,7 +60,7 @@ export class VideoUtil {
    * 通过 ffmpeg 获得视频截帧
    * 返回值： 文件路径 或者 Buffer
    */
-  async getVideoFrame(opts: IGetFrameOption) {
+  async getVideoFrame(opts: IGetFrameOption): Promise<string | Buffer> {
     const { videoUrl, outdir } = opts;
     let { time, retType } = opts;
     if (!videoUrl) {
@@ -87,12 +87,13 @@ export class VideoUtil {
 
       if (retType == 'buffer') {
         const buffer = await fs.promises.readFile(outFile);
-        fs.promises.rm(outFile); //异步删除文件
+        fs.promises.rm(outFile);
         return buffer;
       }
     } catch (e) {
       logger.error(e);
       throw e;
     }
+    throw new Error('retType not match');
   }
 }

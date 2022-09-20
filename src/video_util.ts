@@ -75,9 +75,9 @@ export class VideoUtil {
     time = time || '00:00:01';
     retType = retType || 'buffer';
 
-    let fileName = `${util.md5(videoUrl)}.png`;
+    const fileName = `${util.md5(videoUrl)}.png`;
     const outFile = `${outdir}${fileName}`;
-    let frameRet: IFrameRet = {
+    const frameRet: IFrameRet = {
       fileName,
     };
     try {

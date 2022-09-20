@@ -1,5 +1,5 @@
-const log4js = require('log4js');
 import * as os from 'os';
+const log4js = require('log4js');
 
 log4js.configure({
   appenders: { video: { type: 'file', filename: `${os.homedir()}/video.log` } },

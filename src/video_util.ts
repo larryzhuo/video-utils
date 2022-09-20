@@ -4,7 +4,7 @@ import util from './util';
 import fs from 'fs';
 
 export interface IGetFrameOption {
-  retType: 'path' | 'buffer'; // 返回类型
+  retType?: 'path' | 'buffer'; // 返回类型
   videoUrl: string; // 文件路径
   time?: string; // 截帧时间点  00:00:01
   outdir: string; // 保存路径
@@ -61,12 +61,13 @@ export class VideoUtil {
    * 返回值： 文件路径 或者 Buffer
    */
   async getVideoFrame(opts: IGetFrameOption) {
-    const { videoUrl, retType, outdir } = opts;
-    let { time } = opts;
+    const { videoUrl, outdir } = opts;
+    let { time, retType } = opts;
     if (!videoUrl) {
       throw new Error(`videoUrl 空`);
     }
     time = time || '00:00:01';
+    retType = retType || 'buffer';
 
     const outFile = `${outdir + util.md5(videoUrl)}.png`;
     try {
@@ -85,7 +86,9 @@ export class VideoUtil {
       }
 
       if (retType == 'buffer') {
-        return fs.promises.readFile(outFile);
+        const buffer = await fs.promises.readFile(outFile);
+        fs.promises.rm(outFile); //异步删除文件
+        return buffer;
       }
     } catch (e) {
       logger.error(e);

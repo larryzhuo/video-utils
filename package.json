@@ -1,6 +1,6 @@
 {
   "name": "video-util",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "wrapper ffmpeg and ffprobe to process video",
   "main": "src/index.ts",
   "dependencies": {

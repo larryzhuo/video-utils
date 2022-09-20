@@ -2,12 +2,13 @@ import cmdIns, { ICmdRun } from './cmd';
 import logger from './log/log';
 import util from './util';
 import fs from 'fs';
+import * as os from 'os';
 
 export interface IGetFrameOption {
   retType?: 'path' | 'buffer'; // 返回类型
   videoUrl: string; // 文件路径
   time?: string; // 截帧时间点  00:00:01
-  outdir: string; // 保存路径
+  outdir?: string; // 保存路径
 }
 
 export interface IFormatRet {
@@ -67,16 +68,17 @@ export class VideoUtil {
    * 返回值： 文件路径 或者 Buffer
    */
   async getVideoFrame(opts: IGetFrameOption): Promise<IFrameRet> {
-    const { videoUrl, outdir } = opts;
-    let { time, retType } = opts;
+    const { videoUrl } = opts;
+    let { time, retType, outdir } = opts;
     if (!videoUrl) {
       throw new Error(`videoUrl 空`);
     }
     time = time || '00:00:01';
     retType = retType || 'buffer';
+    outdir = outdir || os.homedir();
 
     const fileName = `${util.md5(videoUrl)}.png`;
-    const outFile = `${outdir}${fileName}`;
+    const outFile = `${outdir}/${fileName}`;
     const frameRet: IFrameRet = {
       fileName,
     };

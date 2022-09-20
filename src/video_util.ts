@@ -26,6 +26,12 @@ export interface IFormatRet {
   };
 }
 
+export interface IFrameRet {
+  fileName: string;
+  path?: string;
+  buf?: Buffer;
+}
+
 /**
  * 依赖于 ffmpeg，ffprobe 处理视频
  */
@@ -60,7 +66,7 @@ export class VideoUtil {
    * 通过 ffmpeg 获得视频截帧
    * 返回值： 文件路径 或者 Buffer
    */
-  async getVideoFrame(opts: IGetFrameOption): Promise<string | Buffer> {
+  async getVideoFrame(opts: IGetFrameOption): Promise<IFrameRet> {
     const { videoUrl, outdir } = opts;
     let { time, retType } = opts;
     if (!videoUrl) {
@@ -69,7 +75,11 @@ export class VideoUtil {
     time = time || '00:00:01';
     retType = retType || 'buffer';
 
-    const outFile = `${outdir + util.md5(videoUrl)}.png`;
+    let fileName = `${util.md5(videoUrl)}.png`;
+    const outFile = `${outdir}${fileName}`;
+    let frameRet: IFrameRet = {
+      fileName,
+    };
     try {
       const ret: ICmdRun = await cmdIns.run('ffmpeg', [
         '-i',
@@ -82,13 +92,14 @@ export class VideoUtil {
       ]);
       logger.info(`output:`, ret.out);
       if (retType == 'path') {
-        return outFile;
+        frameRet.path = outFile;
+        return frameRet;
       }
 
       if (retType == 'buffer') {
-        const buffer = await fs.promises.readFile(outFile);
+        frameRet.buf = await fs.promises.readFile(outFile);
         fs.promises.rm(outFile);
-        return buffer;
+        return frameRet;
       }
     } catch (e) {
       logger.error(e);

@@ -1,11 +1,13 @@
 Node.js wrap ffmpeg and ffprobe to process video.
 
 ### Install
+
 > npm install video-util
 
 ### Example
+
 ```typescript
-import { VideoUtils, IGetFrameOption } from 'video-util';
+import { VideoUtil, IGetFrameOption } from 'video-util';
 
 let videoUtilIns = new VideoUtil();
 
@@ -16,7 +18,7 @@ let videoUtilIns = new VideoUtil();
   //get video one frame by time
   let params:IGetFrameOption = {
     retType: 'path';   //返回类型
-    videoUrl: 'xx.mp4';   //文件路径 
+    videoUrl: 'xx.mp4';   //文件路径
     time?: '00:00:01';   //截帧时间点  00:00:01
     outdir: '/';   //保存路径
   }

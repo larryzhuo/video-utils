@@ -1,39 +1,56 @@
-import cmdIns, { ICmdRun } from "./cmd";
+import cmdIns, { ICmdRun } from './cmd';
 import logger from './log/log';
-import util from "./util";
+import util from './util';
 import fs from 'fs';
 
-
 export interface IGetFrameOption {
-  retType: 'path' | 'buffer';   //返回类型
-  videoUrl: string;   //文件路径 
-  time?: string;   //截帧时间点  00:00:01
-  outdir: string;   //保存路径
+  retType: 'path' | 'buffer'; // 返回类型
+  videoUrl: string; // 文件路径
+  time?: string; // 截帧时间点  00:00:01
+  outdir: string; // 保存路径
+}
+
+export interface IFormatRet {
+  format: {
+    filename: string;
+    nb_streams: number;
+    nb_programs: number;
+    format_name: string;
+    format_long_name: string;
+    start_time: string;
+    duration: string;
+    size: string;
+    bit_rate: string;
+    probe_score: number;
+    tags: any;
+  };
 }
 
 /**
  * 依赖于 ffmpeg，ffprobe 处理视频
  */
 export class VideoUtil {
-  constructor() {
-
-  }
-
   /**
    * 通过 ffprobe 获得视频信息
-   * @param videoUrl 
+   * @param videoUrl
    */
-  async getVideoInfo(videoUrl:string) {
-    if(!videoUrl) {
+  async getVideoInfo(videoUrl: string): Promise<IFormatRet> {
+    if (!videoUrl) {
       throw new Error(`videoUrl 空`);
     }
     try {
-      let ret:ICmdRun = await cmdIns.run('ffprobe', ['-show_format', '-print_format', 'json', '-i', videoUrl]);
+      const ret: ICmdRun = await cmdIns.run('ffprobe', [
+        '-show_format',
+        '-print_format',
+        'json',
+        '-i',
+        videoUrl,
+      ]);
       logger.info(`output:`, ret.out);
-      //解析 ret output，读取信息
-      let retJson = JSON.parse(ret.out);
+      // 解析 ret output，读取信息
+      const retJson: IFormatRet = JSON.parse(ret.out);
       return retJson;
-    } catch(e) {
+    } catch (e) {
       logger.error(e);
       throw e;
     }
@@ -43,25 +60,34 @@ export class VideoUtil {
    * 通过 ffmpeg 获得视频截帧
    * 返回值： 文件路径 或者 Buffer
    */
-  async getVideoFrame(opts:IGetFrameOption) {
-    let {videoUrl, retType, time, outdir} = opts;
-    if(!videoUrl) {
+  async getVideoFrame(opts: IGetFrameOption) {
+    const { videoUrl, retType, outdir } = opts;
+    let { time } = opts;
+    if (!videoUrl) {
       throw new Error(`videoUrl 空`);
     }
     time = time || '00:00:01';
 
-    let outFile = outdir + util.md5(videoUrl) + '.png';
+    const outFile = `${outdir + util.md5(videoUrl)}.png`;
     try {
-      let ret:ICmdRun = await cmdIns.run('ffmpeg', ['-i', videoUrl, '-ss', time, '-frames:v', '1', outFile]);
+      const ret: ICmdRun = await cmdIns.run('ffmpeg', [
+        '-i',
+        videoUrl,
+        '-ss',
+        time,
+        '-frames:v',
+        '1',
+        outFile,
+      ]);
       logger.info(`output:`, ret.out);
-      if(retType == 'path') {
+      if (retType == 'path') {
         return outFile;
       }
 
-      if(retType == 'buffer') {
+      if (retType == 'buffer') {
         return fs.promises.readFile(outFile);
       }
-    } catch(e) {
+    } catch (e) {
       logger.error(e);
       throw e;
     }
